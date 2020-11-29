@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#505050</color>
+    <color name="colorPrimaryDark">#FE5A59</color>
+    <color name="colorAccent">#FFB655</color>
+    <color name="colorControlNormal">#A3B0DD</color>
+
+
+    <color name="wakeup">#FE5A59</color>
+    <color name="ontime">#FFB655</color>
+    <color name="Fondo">#A3B0DD</color>
+    <color name="negro_claro">#505050</color>
+</resources>

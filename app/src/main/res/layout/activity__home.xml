@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity_Home">
+
+    <ImageButton
+        android:id="@+id/btnAlarmasHome"
+        android:layout_width="80dp"
+        android:layout_height="77dp"
+        android:background="@drawable/button_redondo"
+        android:backgroundTint="@color/ontime"
+        android:contentDescription="@string/imgButtonNuevaAlarma"
+        android:onClick="Alarmas"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.256"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.831"
+        app:srcCompat="@drawable/campana" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="80dp"
+        android:layout_height="77dp"
+        android:background="@drawable/button_redondo"
+        android:backgroundTint="@color/ontime"
+        android:contentDescription="@string/imgButtonNuevaAlarma"
+        android:onClick="NewAlarma"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.74"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.831"
+        app:srcCompat="@drawable/nuevalarma2" />
+
+    <TextView
+        android:id="@+id/Temperatura"
+        android:layout_width="28dp"
+        android:layout_height="34dp"
+        android:text="@string/grados"
+        android:textColor="@color/negro_claro"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.639"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.322" />
+
+    <TextClock
+        android:id="@+id/Hora"
+        android:layout_width="218dp"
+        android:layout_height="47dp"
+        android:format12Hour="@null"
+        android:format24Hour="hh:mm a"
+        android:text="@string/hora"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="@color/negro_claro"
+        android:textSize="36sp"
+
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.523"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.112" />
+
+    <ImageView
+        android:id="@+id/IconoClima"
+        android:layout_width="117dp"
+        android:layout_height="117dp"
+        android:contentDescription="@string/img_nuve"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.343"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.273"
+        app:srcCompat="@drawable/clima" />
+
+    <ImageView
+        android:id="@+id/IconoGrados"
+        android:layout_width="27dp"
+        android:layout_height="34dp"
+        android:contentDescription="@string/img_grados_c"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.713"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.322"
+        app:srcCompat="@drawable/climacalido"
+        tools:srcCompat="@drawable/climacalido" />
+
+    <TextView
+        android:id="@+id/Ciudad"
+        android:layout_width="113dp"
+        android:layout_height="33dp"
+        android:text="@string/ciudad"
+        android:textAlignment="center"
+        android:textColor="@color/negro_claro"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.338"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.408" />
+
+    <TextView
+        android:id="@+id/Descripcion"
+        android:layout_width="81dp"
+        android:layout_height="43dp"
+        android:text="@string/descripcion"
+        android:textAlignment="center"
+        android:textColor="@color/negro_claro"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.69"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.376" />
+
+    <View
+        android:id="@+id/divider3"
+        android:layout_width="409dp"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.445" />
+
+    <View
+        android:id="@+id/divider4"
+        android:layout_width="409dp"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.654" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="117dp"
+        android:layout_height="117dp"
+        android:contentDescription="@string/img_taxi"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.343"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.56"
+        app:srcCompat="@drawable/taxi"
+        tools:srcCompat="@drawable/taxi" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="115dp"
+        android:layout_height="26dp"
+        android:text="@string/trafico"
+        android:textAlignment="center"
+        android:textColor="@color/negro_claro"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.77"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.487" />
+
+    <TextView
+        android:id="@+id/textView14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/clima"
+        android:textColor="@color/negro_claro"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.674"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.266" />
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="409dp"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.209" />
+
+    <ImageView
+        android:id="@+id/iconoTrafico"
+        android:layout_width="115dp"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/Estado_trafico"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.77"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.585"
+        app:srcCompat="@drawable/semaforo" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

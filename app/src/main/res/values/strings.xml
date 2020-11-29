@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">¡WAKE UP!</string>
+
+    <!-- HOME -->
+    <string name="hora">00:00 PM</string>
+    <string name="clima">CLIMA</string>
+    <string name="grados">00</string>
+    <string name="ciudad">Ciudad</string>
+    <string name="descripcion">Descripción Clima</string>
+    <string name="img_nuve" />
+    <string name="img_grados_c" />
+    <string name="img_taxi" />
+    <string name="trafico">TRAFICO</string>
+    <string name="Estado_trafico">Descongestionado</string>
+    <string name="imgButtonNuevaAlarma" />
+
+    <!-- ALARMA NUEVA -->
+    <string name="titulo_fijar_alarma">PROGRAMAR NUEVA ALARMA</string>
+    <string name="textEncabezado">Titulo:</string>
+    <string name="encabezado"></string>
+    <string name="textMensaje">Mensaje:</string>
+    <string name="mensaje"></string>
+    <string name="Select_Hora">SELECCIONAR HORA</string>
+    <string name="hora_alarma">00 : 00</string>
+    <string name="btnImgHora" />
+    <string name="Select_Fecha">SELECCIONAR FECHA</string>
+    <string name="fecha_alarma">32-13-0000</string>
+    <string name="btnImgFecha" />
+    <string name="Select_Lugar">SELECCIONAR DESTINO</string>
+    <string name="LugarButton" />
+    <string name="guardarAlarma">GUARDAR ALARMA</string>
+    <string name="btn_Guardar_Alarma" />
+
+    <!-- ALARMA PROGRAMADA -->
+    <string name="titulo_alarmas_P">EDITAR ALARMA</string>
+    <string name="texId" />
+    <string name="btnConsultaID">CONSULTAR</string>
+    <string name="btnConsultaAll">CONSULTAR All</string>
+    <string name="btnConsultaAlls">LISTAR All</string>
+
+    <!--  VARIABLES QUE NO DONDE ESTAN XD  -->
+    <string name="title_activity__mapa">Map</string>
+
+    <!-- GPS -->
+    <string name="longitudeValueBest">0</string>
+    <string name="latitudeValueBest">0</string>
+    <string name="longitudeValueGPS">0</string>
+    <string name="latitudeValueGPS">0</string>
+    <string name="longitudeValueNetwork">0</string>
+    <string name="latitudeValueNetwork">0</string>
+    <string name="pause" />
+    <string name="resume" />
+
+</resources>
