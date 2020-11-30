@@ -22,6 +22,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.widget.DatePicker;
 import android.widget.Toast;
 import java.util.Calendar;
+import java.util.Date;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.mfcompany.wakeupontime.entidades.ClassAlarma;
@@ -149,6 +150,18 @@ public class Activity_New_Alarma extends AppCompatActivity {
         int MINUTE = calendario.get(Calendar.MINUTE);
         fecha_sistema = DAY+"-"+MONTH+"-"+YEAR;
         hora_sistema = String.format("%02d:%02d", HOUR, MINUTE);
+
+
+        calendario.set(Calendar.HOUR, calendario.get(Calendar.HOUR)+ 24);
+        calendario.set(Calendar.MINUTE, calendario.get(Calendar.MINUTE)+30);
+
+        int horaM = calendario.get(Calendar.HOUR_OF_DAY);
+        int minuteM = calendario.get(Calendar.MINUTE);
+
+        System.out.println("Hora normal:: "+hora_sistema);
+        //System.out.println("Hora modificda:: "+tempDate);
+        System.out.println("Hora modificda: "+String.format("%02d:%02d", horaM, minuteM));
+
     }
 
     private boolean CamposVacios(){

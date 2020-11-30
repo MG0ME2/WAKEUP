@@ -64,6 +64,8 @@ public class Activity_Home extends AppCompatActivity {
     ImageView IconoClima, IconoGrados, iconoTrafico;
     TextClock Hora;
     PendingIntent pendingtIntent;
+    boolean EstadoC = false;
+    boolean EstadoT = false;
 
     private String Encabezado, Mensaje, Latitud, Longitud;
 
@@ -136,15 +138,38 @@ public class Activity_Home extends AppCompatActivity {
                 while (true) {
                     try {
                         Vueltas++;
-                        if(Validar()){
-                            setPendingIntent();
-                            NotificationChannelAlarma();
-                        }
-                        if(Vueltas == 2){
+
+                        if(Vueltas > 2){
                             GetDatosC();
                             GetDatosT();
                         }
-                        Thread.sleep(10000);
+                        Thread.sleep(2000);
+
+                        if(EstadoC == true && EstadoT == true || EstadoC == true || EstadoT == true){
+                            int varV =0;
+                            while (varV<31){
+                                if (Validar(varV)){
+                                    if(EstadoC == true && EstadoT == true ){
+                                        triggerNotificationCambioEstado("CLIMA Y TRAFICO");
+                                    }else if(EstadoC == true){
+                                        triggerNotificationCambioEstado("CLIMA");
+                                    }else if(EstadoT == true){
+                                        triggerNotificationCambioEstado("TRAFICO");
+                                    }
+                                }
+                                varV++;
+                            }
+                        }else if(Validar(0)){
+                            setPendingIntent();
+                            NotificationChannelAlarma();
+                        }
+
+                        if(Vueltas < 5){
+                            Thread.sleep(2000);
+                        }else {
+                            Thread.sleep(30000);
+                        }
+
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -155,11 +180,24 @@ public class Activity_Home extends AppCompatActivity {
         hilo.start();
     }
 
-    private boolean Validar(){
+    private boolean Validar(int minutoS){
         DateTime();
         boolean Validacion = false;
         Cursor cursor;
-        String[] parametros = {dateSystem,timeSystem};
+
+        String[] parametros;
+        if(EstadoC == true && EstadoT == true || EstadoC == true || EstadoT == true ){
+            calendario.set(java.util.Calendar.HOUR, calendario.get(java.util.Calendar.HOUR));
+            calendario.set(java.util.Calendar.MINUTE, calendario.get(java.util.Calendar.MINUTE)+minutoS);
+            int horaM = calendario.get(java.util.Calendar.HOUR_OF_DAY);
+            int minuteM = calendario.get(java.util.Calendar.MINUTE);
+            timeSystem = String.format("%02d:%02d",horaM,minuteM);
+
+            parametros = new String[]{dateSystem, timeSystem};
+        }else{
+            parametros = new String[]{dateSystem, timeSystem};
+        }
+
         try {
             cursor = db.rawQuery("SELECT "+ Utilidades.TABLA_ENCABEZADO+" , "+Utilidades.TABLA_MENSAJE+" , "+Utilidades.TABLA_LATITUD+" , "+Utilidades.TABLA_LONGITUD+" FROM "+Utilidades.TABLA_ALARMA +" WHERE "+Utilidades.TABLA_FECHA+"=? AND "+Utilidades.TABLA_HORA+"=?", parametros);
             if (cursor.moveToFirst()){
@@ -419,28 +457,39 @@ public class Activity_Home extends AppCompatActivity {
 
     private void AlertaClima(int tempC, int humedad) {
         if(tempC<20 && humedad>50){
+            EstadoC = true;
             notificacionProblema("CLIMA");
             NotificationChannelProblema("CLIMA");
+        }else{
+            EstadoC = false;
         }
+
     }
 
     private void AlertaTrafico(int currentSpeed, int freeFlowSpeed, double confidence, boolean roadClosure) {
         if(currentSpeed > 50 && freeFlowSpeed > 50 && confidence > 0.4 && roadClosure==false){
             iconoTrafico.setImageResource(R.drawable.semaforo_verde);
+            EstadoT = false;
         }else if(currentSpeed > 30 && currentSpeed < 50 && freeFlowSpeed > 30 && freeFlowSpeed < 50 && confidence > 0.3 && roadClosure==false){
             iconoTrafico.setImageResource(R.drawable.semaforo_amarillo);
+            EstadoT = true;
             notificacionProblema("TRAFICO");
             NotificationChannelProblema("TRAFICO");
+
         }else if(currentSpeed > 30 && currentSpeed < 50 && freeFlowSpeed > 30 && freeFlowSpeed < 50 && confidence > 0.3 && roadClosure==true){
             iconoTrafico.setImageResource(R.drawable.semaforo_amarillo);
+            EstadoT = true;
             notificacionProblema("TRAFICO");
             NotificationChannelProblema("TRAFICO");
+
         }else if(currentSpeed > 1 && currentSpeed < 30 && freeFlowSpeed > 1 && freeFlowSpeed < 30 && confidence > 0.01 && roadClosure==false){
             iconoTrafico.setImageResource(R.drawable.semaforo_rojo);
+            EstadoC = true;
         }
     }
 
     public void notificacionProblema(String problema){
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID2)
                 .setSmallIcon(R.drawable.advertencia)
                 .setContentTitle("ALERTA DE ESTADO")
@@ -454,6 +503,7 @@ public class Activity_Home extends AppCompatActivity {
     }
 
     private void NotificationChannelProblema(String problema) {
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "ALERTA DE ESTADO";
             String description = "EL "+problema+" ESTA CAMBIANDO, TOMA PRECAUCIONES";
@@ -478,6 +528,7 @@ public class Activity_Home extends AppCompatActivity {
         stackBuilder.addNextIntent(intent);
         pendingtIntent = stackBuilder.getPendingIntent(1, PendingIntent.FLAG_UPDATE_CURRENT);
     }
+
     private void triggerNotification() {
         long[] pattern = new long[]{0, 100, 1000,200,2000,1000,2000,200,1000,100};
         String description = Mensaje+"\nEn la Ubicacion: -> Lat: "+Latitud+" Lon: "+Longitud;
@@ -495,6 +546,31 @@ public class Activity_Home extends AppCompatActivity {
 
         Notification notificacion = new NotificationCompat.BigTextStyle(builder)
                 .setBigContentTitle(Encabezado)
+                .build();
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(NOTIFICATION_ID, notificacion);
+    }
+
+    private void triggerNotificationCambioEstado(String Estado) {
+        long[] pattern = new long[]{0, 100, 1000,200,2000,1000,2000,200,1000,100};
+        String description = Mensaje+"\nEn la Ubicacion: -> Lat: "+Latitud+" Lon: "+Longitud;
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.alarmacolor))
+                .setSmallIcon(R.drawable.alarma)
+                .setContentTitle(Encabezado)
+                .setContentText(description)
+                .setVibrate(pattern)
+                .setSound(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.notification5))
+                .setColor(Color.rgb(255,89,89))
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        builder.setContentIntent(pendingtIntent);
+
+        Notification notificacion = new NotificationCompat.BigTextStyle(builder)
+                .setBigContentTitle(Encabezado)
+                .setSummaryText("EL "+Estado+" ESTA CAMBIANDO")
                 .build();
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
