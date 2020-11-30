@@ -6,17 +6,19 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import android.Manifest;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.icu.util.Calendar;
 import android.location.Address;
@@ -38,13 +40,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.mfcompany.wakeupontime.entidades.ClassAlarma;
 import com.mfcompany.wakeupontime.utilidades.Utilidades;
 import android.location.Location;
 import android.location.LocationListener;
 import android.provider.Settings;
-import android.widget.Toast;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,12 +56,16 @@ import java.util.Locale;
  */
 
 public class Activity_Home extends AppCompatActivity {
+    private final int NOTIFICATION_ID = 1010;
     private static final int CHANNEL_ID =000 ;
     private static final String CHANNEL_ID2 ="000" ;
 
     TextView Temperatura, Ciudad, Descripcion;
     ImageView IconoClima, IconoGrados, iconoTrafico;
     TextClock Hora;
+    PendingIntent pendingtIntent;
+
+    private String Encabezado, Mensaje, Latitud, Longitud;
 
     Double LatitudGPS;
     Double LongitudGPS;
@@ -133,7 +136,10 @@ public class Activity_Home extends AppCompatActivity {
                 while (true) {
                     try {
                         Vueltas++;
-                        servicio();
+                        if(Validar()){
+                            setPendingIntent();
+                            NotificationChannelAlarma();
+                        }
                         if(Vueltas == 2){
                             GetDatosC();
                             GetDatosT();
@@ -149,18 +155,6 @@ public class Activity_Home extends AppCompatActivity {
         hilo.start();
     }
 
-    public void servicio() {
-        if (Validar()){
-            Intent intent = new Intent(Activity_Home.this, MyAlarmReceiver.class);
-            Bundle Info = new Bundle();
-            Info.putInt("alarma",1);
-            intent.putExtras(Info);
-            PendingIntent pIntent = PendingIntent.getBroadcast(getApplicationContext(),0,intent,0);
-            AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            alarm.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+1+1000,pIntent);
-        }
-    }
-
     private boolean Validar(){
         DateTime();
         boolean Validacion = false;
@@ -169,6 +163,10 @@ public class Activity_Home extends AppCompatActivity {
         try {
             cursor = db.rawQuery("SELECT "+ Utilidades.TABLA_ENCABEZADO+" , "+Utilidades.TABLA_MENSAJE+" , "+Utilidades.TABLA_LATITUD+" , "+Utilidades.TABLA_LONGITUD+" FROM "+Utilidades.TABLA_ALARMA +" WHERE "+Utilidades.TABLA_FECHA+"=? AND "+Utilidades.TABLA_HORA+"=?", parametros);
             if (cursor.moveToFirst()){
+                Encabezado = cursor.getString(0);
+                Mensaje = cursor.getString(1);
+                Latitud = cursor.getString(2);
+                Longitud = cursor.getString(3);
                 cursor.close();
                 Validacion = true;
             }else {
@@ -239,7 +237,6 @@ public class Activity_Home extends AppCompatActivity {
             loc.getLongitude();
             LatitudGPS = loc.getLatitude();
             LongitudGPS= loc.getLongitude();
-            //Toast.makeText(getApplicationContext(), "Mi ubicacion actual es: Lat = "+ loc.getLatitude() + " Long = " + loc.getLongitude(), Toast.LENGTH_SHORT).show();
             System.out.println("Mi ubicacion actual es: Lat = "+ loc.getLatitude() + " Long = " + loc.getLongitude());
             this.Activity_Home.setLocation(loc);
         }
@@ -422,8 +419,8 @@ public class Activity_Home extends AppCompatActivity {
 
     private void AlertaClima(int tempC, int humedad) {
         if(tempC<20 && humedad>50){
-            notificacion("CLIMA");
-            createNotificationChannel("CLIMA");
+            notificacionProblema("CLIMA");
+            NotificationChannelProblema("CLIMA");
         }
     }
 
@@ -432,18 +429,18 @@ public class Activity_Home extends AppCompatActivity {
             iconoTrafico.setImageResource(R.drawable.semaforo_verde);
         }else if(currentSpeed > 30 && currentSpeed < 50 && freeFlowSpeed > 30 && freeFlowSpeed < 50 && confidence > 0.3 && roadClosure==false){
             iconoTrafico.setImageResource(R.drawable.semaforo_amarillo);
-            notificacion("TRAFICO");
-            createNotificationChannel("TRAFICO");
+            notificacionProblema("TRAFICO");
+            NotificationChannelProblema("TRAFICO");
         }else if(currentSpeed > 30 && currentSpeed < 50 && freeFlowSpeed > 30 && freeFlowSpeed < 50 && confidence > 0.3 && roadClosure==true){
             iconoTrafico.setImageResource(R.drawable.semaforo_amarillo);
-            notificacion("TRAFICO");
-            createNotificationChannel("TRAFICO");
+            notificacionProblema("TRAFICO");
+            NotificationChannelProblema("TRAFICO");
         }else if(currentSpeed > 1 && currentSpeed < 30 && freeFlowSpeed > 1 && freeFlowSpeed < 30 && confidence > 0.01 && roadClosure==false){
             iconoTrafico.setImageResource(R.drawable.semaforo_rojo);
         }
     }
 
-    public void notificacion(String problema){
+    public void notificacionProblema(String problema){
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID2)
                 .setSmallIcon(R.drawable.advertencia)
                 .setContentTitle("ALERTA DE ESTADO")
@@ -456,7 +453,7 @@ public class Activity_Home extends AppCompatActivity {
         notificationManager.notify(CHANNEL_ID, builder.build());
     }
 
-    private void createNotificationChannel(String problema) {
+    private void NotificationChannelProblema(String problema) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "ALERTA DE ESTADO";
             String description = "EL "+problema+" ESTA CAMBIANDO, TOMA PRECAUCIONES";
@@ -473,8 +470,59 @@ public class Activity_Home extends AppCompatActivity {
             notificationManager.createNotificationChannel(channel);
         }
     }
+    /****************************************** alarma *************************************************/
+    private void setPendingIntent(){
+        Intent intent = new Intent(getApplicationContext(), Activity_Home.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+        stackBuilder.addParentStack(Activity_Home.class);
+        stackBuilder.addNextIntent(intent);
+        pendingtIntent = stackBuilder.getPendingIntent(1, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+    private void triggerNotification() {
+        long[] pattern = new long[]{0, 100, 1000,200,2000,1000,2000,200,1000,100};
+        String description = Mensaje+"\nEn la Ubicacion: -> Lat: "+Latitud+" Lon: "+Longitud;
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.alarmacolor))
+                .setSmallIcon(R.drawable.alarma)
+                .setContentTitle(Encabezado)
+                .setContentText(description)
+                .setVibrate(pattern)
+                .setSound(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.notification5))
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        builder.setContentIntent(pendingtIntent);
+
+        Notification notificacion = new NotificationCompat.BigTextStyle(builder)
+                .setBigContentTitle(Encabezado)
+                .build();
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(NOTIFICATION_ID, notificacion);
+    }
+
+    private void NotificationChannelAlarma() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = Encabezado;
+            String description = Mensaje+"\nEn la Ubicacion: -> Lat: "+Latitud+" Lon: "+Longitud;
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .build();
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID2, name, importance);
+            channel.setDescription(description);
+            channel.setVibrationPattern(new long[]{0, 100, 1000,200,2000,1000,2000,200,1000,100});
+            channel.setSound(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.notification5),audioAttributes);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }else{
+          triggerNotification();
+        }
+    }
 
     /****************************************** onClicks *************************************************/
+
     public  void  NewAlarma(View view){
         Intent NewAlarma = new Intent(this, Activity_New_Alarma.class);
         startActivity(NewAlarma);

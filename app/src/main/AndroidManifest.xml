@@ -48,9 +48,6 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".MyAlarmReceiver" />
-
-        <service android:name=".MyTestService" />
     </application>
 
 </manifest>
