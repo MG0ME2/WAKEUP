@@ -152,7 +152,10 @@ public class Activity_New_Alarma extends AppCompatActivity {
     }
 
     private boolean CamposVacios(){
-        if(editTextTitulo.getText().toString().equals("") && editTextMensaje.getText().toString().equals("")){
+        String c1 = editTextTitulo.getText().toString();
+        String c2 = editTextMensaje.getText().toString();
+
+        if(c1.isEmpty() && c2.isEmpty() || c1.isEmpty() || c2.isEmpty()){
             Toast.makeText(getApplicationContext(), "No Dejes Campos Vacíos", Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -163,6 +166,7 @@ public class Activity_New_Alarma extends AppCompatActivity {
 
     private void RegistrarAlarma() {
         DateTime();
+
         if(!Validar(fecha_alarma.getText().toString(), hora_alarma.getText().toString())){
             ContentValues Values = new ContentValues();
             Values.put(Utilidades.TABLA_ENCABEZADO, editTextTitulo.getText().toString());
@@ -207,7 +211,7 @@ public class Activity_New_Alarma extends AppCompatActivity {
     }
 
     private  void  IrMapa(){
-        Intent IrMapa = new Intent(this, Activity_Mapa.class);
+        Intent IrMapa = new Intent(getApplicationContext(), MapsActivity.class);
         startActivity(IrMapa);
     }
 

@@ -8,6 +8,8 @@ import androidx.core.app.NotificationManagerCompat;
 import android.Manifest;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -21,6 +23,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,6 +43,8 @@ import com.mfcompany.wakeupontime.utilidades.Utilidades;
 import android.location.Location;
 import android.location.LocationListener;
 import android.provider.Settings;
+import android.widget.Toast;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -209,6 +214,7 @@ public class Activity_Home extends AppCompatActivity {
                 List<Address> list = geocoder.getFromLocation(loc.getLatitude(), loc.getLongitude(), 1);
                 if (!list.isEmpty()) {
                     Address DirCalle = list.get(0);
+
                     System.out.println("Mi direccion es: "+ DirCalle.getAddressLine(0));
                 }
             } catch (IOException e) {
@@ -233,6 +239,7 @@ public class Activity_Home extends AppCompatActivity {
             loc.getLongitude();
             LatitudGPS = loc.getLatitude();
             LongitudGPS= loc.getLongitude();
+            //Toast.makeText(getApplicationContext(), "Mi ubicacion actual es: Lat = "+ loc.getLatitude() + " Long = " + loc.getLongitude(), Toast.LENGTH_SHORT).show();
             System.out.println("Mi ubicacion actual es: Lat = "+ loc.getLatitude() + " Long = " + loc.getLongitude());
             this.Activity_Home.setLocation(loc);
         }
@@ -416,6 +423,7 @@ public class Activity_Home extends AppCompatActivity {
     private void AlertaClima(int tempC, int humedad) {
         if(tempC<20 && humedad>50){
             notificacion("CLIMA");
+            createNotificationChannel("CLIMA");
         }
     }
 
@@ -425,9 +433,11 @@ public class Activity_Home extends AppCompatActivity {
         }else if(currentSpeed > 30 && currentSpeed < 50 && freeFlowSpeed > 30 && freeFlowSpeed < 50 && confidence > 0.3 && roadClosure==false){
             iconoTrafico.setImageResource(R.drawable.semaforo_amarillo);
             notificacion("TRAFICO");
+            createNotificationChannel("TRAFICO");
         }else if(currentSpeed > 30 && currentSpeed < 50 && freeFlowSpeed > 30 && freeFlowSpeed < 50 && confidence > 0.3 && roadClosure==true){
             iconoTrafico.setImageResource(R.drawable.semaforo_amarillo);
             notificacion("TRAFICO");
+            createNotificationChannel("TRAFICO");
         }else if(currentSpeed > 1 && currentSpeed < 30 && freeFlowSpeed > 1 && freeFlowSpeed < 30 && confidence > 0.01 && roadClosure==false){
             iconoTrafico.setImageResource(R.drawable.semaforo_rojo);
         }
@@ -444,6 +454,24 @@ public class Activity_Home extends AppCompatActivity {
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.notify(CHANNEL_ID, builder.build());
+    }
+
+    private void createNotificationChannel(String problema) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "ALERTA DE ESTADO";
+            String description = "EL "+problema+" ESTA CAMBIANDO, TOMA PRECAUCIONES";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .build();
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID2, name, importance);
+            channel.setDescription(description);
+            channel.setVibrationPattern(new long[] {100, 250, 100, 500});
+            channel.setSound(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.notification3),audioAttributes);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     /****************************************** onClicks *************************************************/

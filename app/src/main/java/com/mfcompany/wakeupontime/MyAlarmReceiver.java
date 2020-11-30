@@ -1,6 +1,7 @@
 package com.mfcompany.wakeupontime;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
@@ -12,7 +13,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.icu.util.Calendar;
+import android.media.AudioAttributes;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -26,6 +29,7 @@ import com.mfcompany.wakeupontime.utilidades.Utilidades;
 public class MyAlarmReceiver extends BroadcastReceiver {
 
     private final int NOTIFICATION_ID = 1010;
+    private static final String CHANNEL_ID2 ="000" ;
     private NotificationManager notificationManager;
     private String Encabezado, Mensaje, Latitud, Longitud;
     private Calendar calendario;
@@ -75,6 +79,7 @@ public class MyAlarmReceiver extends BroadcastReceiver {
             cursor.close();
             setPendingIntent();
             triggerNotification(context, Encabezado, Mensaje,  Latitud, Longitud);
+            createNotificationChannel(context, Encabezado, Mensaje,  Latitud, Longitud);
             return true;
         }catch (Exception e){
             Log.i("ERROR VALIDAR MAR:", ""+e);
@@ -117,4 +122,21 @@ public class MyAlarmReceiver extends BroadcastReceiver {
         notificationManager.notify(NOTIFICATION_ID, notificacion);
     }
 
+    private void createNotificationChannel(Context context,String encabezado, String mensaje, String latitud, String longitud) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = encabezado;
+            String description = mensaje+"\nEn la Ubicacion: -> Lat: "+latitud+" Lon: "+longitud;
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .build();
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID2, name, importance);
+            channel.setDescription(description);
+            channel.setVibrationPattern(new long[]{0, 100, 1000,200,2000,1000,2000,200,1000,100});
+            channel.setSound(Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.notification5),audioAttributes);
+            notificationManager = context.getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
 }

@@ -40,15 +40,9 @@
 
     <!--  VARIABLES QUE NO DONDE ESTAN XD  -->
     <string name="title_activity__mapa">Map</string>
+    <string name="title_activity_maps">Map</string>
 
     <!-- GPS -->
-    <string name="longitudeValueBest">0</string>
-    <string name="latitudeValueBest">0</string>
-    <string name="longitudeValueGPS">0</string>
-    <string name="latitudeValueGPS">0</string>
-    <string name="longitudeValueNetwork">0</string>
-    <string name="latitudeValueNetwork">0</string>
-    <string name="pause" />
-    <string name="resume" />
+
 
 </resources>
